@@ -1,0 +1,66 @@
+<%= render 'previous_next_doc' %>
+
+<% @page_title = t('blacklight.search.show.title', :document_title => document_show_html_title, :application_name => application_name).html_safe %>
+<% content_for(:head) { render_link_rel_alternates } %>
+<% p @document%>
+<div id="document" class="document <%= render_document_class %>" itemscope  itemtype="<%= @document.itemtype %>">
+<h1><%=@document['title_display']%></h1>
+
+<dl class="dl-horizontal  dl-invert">
+	    <dt class="blacklight-format">ID:</dt>
+	    <dd class="blacklight-format"><%=@document['id']%></dd>
+	    <dt class="blacklight-format">Opinion Type:</dt>
+	    <dd class="blacklight-format"><%=@document['format']%></dd>
+	    <dt class="blacklight-format">Year:</dt>
+	    <dd class="blacklight-format"><%=@document['year_facet']%></dd>	    
+	    <dt class="blacklight-language_facet">Author:</dt>
+	    <dd class="blacklight-language_facet">
+			<% @document['language_facet'].each do |t| %>
+			  <%= t %><br/>
+			<% end %>
+	    </dd>
+	    <dt class="blacklight-language_facet">Author Wikipedia:</dt>
+	    <dd class="blacklight-language_facet">
+			<% @document['wikipedia_t'].each do |t| %>
+			  <a href="http://wikipedia.org/wiki/<%= t %>"><%= t %></a>
+			<% end %>
+	    </dd>	    
+	    <dt class="blacklight-language_facet">Author Wikidata:</dt>
+	    <dd class="blacklight-language_facet">
+			<% @document['wikidata_t'].each do |t| %>
+			  <a href="https://www.wikidata.org/entity/<%= t %>"><%= t %></a> 
+			<% end %>
+	    </dd>	
+	    <% if !@document['subject_geo_facet'].blank? %>
+
+	    <dt class="blacklight-language_facet">Extracted Locations:</dt>
+	    <dd class="blacklight-language_facet">
+	    	<%= @document['subject_geo_facet'].join(", ") %>
+	    </dd>
+	    <% end %>
+
+	    <% if !@document['subject_topic_facet'].blank? %>
+	    <dt class="blacklight-language_facet">Extracted Organizations:</dt>
+	    <dd class="blacklight-language_facet">
+			<%= @document['subject_topic_facet'].join(", ") %>
+ 
+	    </dd>	 
+	    <% end %>
+</dl>
+<div>
+<%=simple_format(@document['text_display'][0])%>
+</div>
+
+  <div id="doc_<%= @document.id.to_s.parameterize %>">
+    <%= render_document_partials  blacklight_config.view_config(:show).partials %>
+  </div>
+</div>
+
+<% if @document.respond_to?(:export_as_openurl_ctx_kev) %>
+  <!-- 
+       // COinS, for Zotero among others. 
+       // This document_partial_name(@document) business is not quite right,
+       // but has been there for a while. 
+  -->
+  <span class="Z3988" title="<%= @document.export_as_openurl_ctx_kev(document_partial_name(@document)) %>"></span>
+<% end %>
