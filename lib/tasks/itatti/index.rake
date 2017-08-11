@@ -12,13 +12,15 @@ namespace :caselaw do
  	solr = RSolr.connect :url => Blacklight.connection_config[:url]
  	solr.delete_by_query '*:*'
 
+ 	counter = 0
+ 	total = 0
 
 	File.open("/Users/thisismattmiller/Downloads/Illcases_solr_docs.ndjson", "r").each_line do |line|
 
 
 		data  = JSON.parse line
 
-		p data
+		# p data
 
 		if data['pub_date'].length == 4
 			data['pub_date'] = data['pub_date'] + '-01-01'
@@ -63,9 +65,17 @@ namespace :caselaw do
 
 		
 		solr.add doc
+		counter = counter + 1
+		total = total + 1
+
+		if counter > 100
+			solr.commit
+			p total
+			counter = 0
+		end
 
 	end
-	solr.commit
+	
 
 	# counter = 0
 	# allUris.each do |uri|
